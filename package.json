@@ -1,0 +1,15 @@
+{
+  "name": "tele2-observer",
+  "version": "0.1.0",
+	"author": "ddutikov",
+	"description": "",
+  "type": "module",
+  "scripts": {
+    
+  },
+  
+  "license": "GPL3",
+  "dependencies": {
+    "log4js": "6.1.0"
+  }
+}

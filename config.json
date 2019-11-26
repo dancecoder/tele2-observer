@@ -1,0 +1,7 @@
+{
+	"pollingPeriod": 300000,
+	"site": "chelyabinsk.tele2.ru",
+	"accounts": [
+		{ "pNumber": "79043008412", "password": "149747" }
+	]
+}
