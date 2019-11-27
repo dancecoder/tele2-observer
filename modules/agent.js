@@ -57,11 +57,14 @@ export class HttpUserAgent {
 					if (!xhr && crq.method === 'GET') {
 						this.referer = `${crq.agent.protocol}//${this.host}${options.path}`;
 					}
-					log.debug('Response:', JSON.stringify({ status: resp.statusCode, headers: resp.headers }));
+					const content = content.join('');
+					log.debug('Response statusCode:', resp.statusCode);
+					log.debug('Response headers:', resp.headers);
+					log.trace('Response content:', content);
 					rs({
 						statusCode: resp.statusCode,
 						headers: resp.headers,
-						content: content.join(''),
+						content,
 					});
 				});
 			});
