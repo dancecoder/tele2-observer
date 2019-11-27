@@ -38,7 +38,10 @@ export class HttpUserAgent {
 				options.headers['referer'] = this.referer;
 			}
 			options.headers['cookie'] = this.cookies.asHeaderValue();
-			log.debug('Request:', JSON.stringify({ method: options.method, path: options.path, xhr, headers: options.headers }));
+			log.debug('Request method:', options.method);
+			log.debug('Request path:', options.path);
+			log.debug('Request is xhr:', xhr);
+			log.debug('Request headers:', options.headers);
 			const crq = request(options);
 			crq.on('abort', (arg) => log.debug('abort'));			
 			// crq.on('socket', (arg) => log.debug('socket'));
@@ -49,15 +52,15 @@ export class HttpUserAgent {
 				if (setCookie != null) {
 					this.cookies.set(setCookie);
 				} 				
-				const content = [];
+				const contentData = [];
 				resp.on('data', (chunk) => {
-					content.push(chunk);
+					contentData.push(chunk);
 				});
 				resp.on('end', () => {
 					if (!xhr && crq.method === 'GET') {
 						this.referer = `${crq.agent.protocol}//${this.host}${options.path}`;
 					}
-					const content = content.join('');
+					const content = contentData.join('');
 					log.debug('Response statusCode:', resp.statusCode);
 					log.debug('Response headers:', resp.headers);
 					log.trace('Response content:', content);
@@ -92,7 +95,7 @@ export class HttpUserAgent {
 		const headers = { ...DEFAULT_HEADERS };
 		const method = 'GET';
 		const path = query == null ? pathName : `${pathName}?${querystring.stringify(query)}`;
-		const result = await this.httpRequest({ method, path, headers });
+		const result = await this.httpRequest({ method, path, headers }, false);
 		return this.hadleRedirectIdNeed(result);
 	}
 
@@ -112,7 +115,7 @@ export class HttpUserAgent {
 		const headers = { ...DEFAULT_HEADERS };
 		const method = 'GET';
 		const path = query == null ? pathName : `${pathName}?${querystring.stringify(query)}`;
-		const resp = await this.httpRequest({ method, path, headers });
+		const resp = await this.httpRequest({ method, path, headers }, true);
 		if (resp.statusCode != 200) {
 			log.debug('Erroneous responce:', resp);
 			throw new Error('xhrGetFailed');
@@ -124,7 +127,7 @@ export class HttpUserAgent {
 		const headers = { ...DEFAULT_HEADERS };
 		const method = 'DELETE';
 		const path = query == null ? pathName : `${pathName}?${querystring.stringify(query)}`;
-		const resp = await this.httpRequest({ method, path, headers });
+		const resp = await this.httpRequest({ method, path, headers }, true);
 		if (resp.statusCode != 200) {
 			log.debug('Erroneous responce:', resp);
 			throw new Error('xhrDeleteFailed');
