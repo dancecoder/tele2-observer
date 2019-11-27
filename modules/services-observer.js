@@ -115,14 +115,14 @@ export class ServicesObserver extends EventEmitter {
 		log.info('Checking services');
 		const services = await this.authorizedAgent.xhrGet(`/api/subscribers/${this.pNumber}/${this.siteId}/services`, { status: 'connected' });
 		const parsed = JSON.parse(services.content);
-		if (services.statusCode !== 200 || parsed.meta.status === 'ERROR') {
+		if (parsed.meta.status === 'ERROR') {
 			log.debug('content:', services.content);
-			throw new Error(parsed.meta.message)
+			throw new Error(parsed.meta.message);
 		}		
 		const currentServices = parsed.data;
 		if (this.previousServices == null) {
 			currentServices.forEach(s => {
-				log.info(`service: ${s.name}, abonentFee: ${JSON.stringify(s.abonentFee)}`)
+				log.info(`service: ${s.name}, abonentFee:`, s.abonentFee);
 			});
 		} else {
 			const newServices = currentServices.filter(s => this.previousServices.every(ps => ps.billingId !== s.billingId));
@@ -131,7 +131,7 @@ export class ServicesObserver extends EventEmitter {
 			} else {
 				log.warn('New serices found:');
 				newServices.forEach(s => {
-					log.warn(`service: ${s.name}, abonentFee: ${JSON.stringify(s.abonentFee)}`);
+					log.warn(`service: ${s.name}, abonentFee:`, s.abonentFee);
 				});
 			}
 		}
@@ -143,7 +143,7 @@ export class ServicesObserver extends EventEmitter {
 		log.info('Checking subscriptions');
 		const resp = await this.authorizedAgent.xhrGet(`/api/subscribers/${this.pNumber}/subscription`);
 		const parsed = JSON.parse(resp.content);
-		if (resp.statusCode !== 200 || parsed.meta.status === 'ERROR') {
+		if (parsed.meta.status === 'ERROR') {
 			log.debug('content:', resp.content);
 			throw new Error(parsed.meta.message);
 		}		
@@ -160,15 +160,19 @@ export class ServicesObserver extends EventEmitter {
 
 	async removeSubscription(name, providerId, serviceId) {		
 		log.info(`Removing subscription: ${name}`);
-		const resp = await this.authorizedAgent.xhrDelete(
-			`/api/subscribers/${this.pNumber}/subscription`,
-			{ prov_id: providerId, serv_id: serviceId }
-		);
-		const parsed = JSON.parse(resp.content);
-		if (resp.statusCode !== 200) {
-			log.debug('content:', resp.content);
+		try {
+			const resp = await this.authorizedAgent.xhrDelete(
+				`/api/subscribers/${this.pNumber}/subscription`,
+				{ prov_id: providerId, serv_id: serviceId }
+			);
+			const parsed = JSON.parse(resp.content);
+			if (parsed.meta.status === 'ERROR') {
+				log.warn('Subscription remove failed');
+				this.emit('error', this.pNumber, new Error(parsed.meta.message));
+			}
+		} catch(e) {
 			log.warn('Unable remove subscription');
-			this.emit('error', this.pNumber, new Error(parsed.meta.message));
+			this.emit('error', this.pNumber, e);
 		}
 	}
 

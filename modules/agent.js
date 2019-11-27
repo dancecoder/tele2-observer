@@ -109,14 +109,24 @@ export class HttpUserAgent {
 		const headers = { ...DEFAULT_HEADERS };
 		const method = 'GET';
 		const path = query == null ? pathName : `${pathName}?${querystring.stringify(query)}`;
-		return await this.httpRequest({ method, path, headers });
+		const resp = await this.httpRequest({ method, path, headers });
+		if (resp.statusCode != 200) {
+			log.debug('Erroneous responce:', resp);
+			throw new Error('xhrGetFailed');
+		}
+		return resp;
 	}
 
 	async xhrDelete(pathName, query) {
 		const headers = { ...DEFAULT_HEADERS };
 		const method = 'DELETE';
 		const path = query == null ? pathName : `${pathName}?${querystring.stringify(query)}`;
-		return await this.httpRequest({ method, path, headers });
+		const resp = await this.httpRequest({ method, path, headers });
+		if (resp.statusCode != 200) {
+			log.debug('Erroneous responce:', resp);
+			throw new Error('xhrDeleteFailed');
+		}
+		return resp;
 	}
 
 }
