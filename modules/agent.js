@@ -111,26 +111,26 @@ export class HttpUserAgent {
 		return this.hadleRedirectIdNeed(result);		
 	}
 
-	async xhrGet(pathName, query) {
-		const headers = { ...DEFAULT_HEADERS };
+	async xhrGet(pathName, query, accept) {
+		const headers = { ...DEFAULT_HEADERS, Accept: accept };
 		const method = 'GET';
 		const path = query == null ? pathName : `${pathName}?${querystring.stringify(query)}`;
 		const resp = await this.httpRequest({ method, path, headers }, true);
 		if (resp.statusCode != 200) {
 			log.debug('Erroneous responce:', resp);
-			throw new Error('xhrGetFailed');
+			throw new Error('xhr GET failed with code', resp.statusCode);
 		}
 		return resp;
 	}
 
-	async xhrDelete(pathName, query) {
-		const headers = { ...DEFAULT_HEADERS };
+	async xhrDelete(pathName, query, accept) {
+		const headers = { ...DEFAULT_HEADERS, Accept: accept };
 		const method = 'DELETE';
 		const path = query == null ? pathName : `${pathName}?${querystring.stringify(query)}`;
 		const resp = await this.httpRequest({ method, path, headers }, true);
 		if (resp.statusCode != 200) {
 			log.debug('Erroneous responce:', resp);
-			throw new Error('xhrDeleteFailed');
+			throw new Error('xhr DELETE failed with code', resp.statusCode);
 		}
 		return resp;
 	}

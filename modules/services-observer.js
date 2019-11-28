@@ -113,7 +113,11 @@ export class ServicesObserver extends EventEmitter {
 
 	async checkServices() {
 		log.info('Checking services');
-		const services = await this.authorizedAgent.xhrGet(`/api/subscribers/${this.pNumber}/${this.siteId}/services`, { status: 'connected' });
+		const services = await this.authorizedAgent.xhrGet(
+			`/api/subscribers/${this.pNumber}/${this.siteId}/services`, 
+			{ status: 'connected' }, 
+			'application/json',
+		);
 		const parsed = JSON.parse(services.content);
 		if (parsed.meta.status === 'ERROR') {
 			log.debug('content:', services.content);
@@ -141,7 +145,11 @@ export class ServicesObserver extends EventEmitter {
 	async checkSubscriptions() {
 		// https://chelyabinsk.tele2.ru/api/subscribers/79043008412/subscription
 		log.info('Checking subscriptions');
-		const resp = await this.authorizedAgent.xhrGet(`/api/subscribers/${this.pNumber}/subscription`);
+		const resp = await this.authorizedAgent.xhrGet(
+			`/api/subscribers/${this.pNumber}/subscription`, 
+			null, 
+			'application/json'
+		);
 		const parsed = JSON.parse(resp.content);
 		if (parsed.meta.status === 'ERROR') {
 			log.debug('content:', resp.content);
@@ -163,7 +171,8 @@ export class ServicesObserver extends EventEmitter {
 		try {
 			const resp = await this.authorizedAgent.xhrDelete(
 				`/api/subscribers/${this.pNumber}/subscription`,
-				{ prov_id: providerId, serv_id: serviceId }
+				{ prov_id: providerId, serv_id: serviceId },
+				'application/json',
 			);
 			const parsed = JSON.parse(resp.content);
 			if (parsed.meta.status === 'ERROR') {

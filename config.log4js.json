@@ -5,6 +5,6 @@
 	},
 	"categories": {
 		"default": { "appenders": [ "out", "app" ], "level": "debug" },
-		"http": { "appenders": [ "out", "app" ], "level": "info" }
+		"http": { "appenders": [ "out", "app" ], "level": "debug" }
 	}
 }
