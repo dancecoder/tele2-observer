@@ -10,6 +10,6 @@
   
   "license": "GPL3",
   "dependencies": {
-    "log4js": "6.1.0"
+    "log4js": "6.4.0"
   }
 }
